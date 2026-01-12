@@ -73,10 +73,24 @@ To address these limitations, we propose SGDrive, a novel framework that explici
 
 ## Qualitative Results on NAVSIM Navtest 
 <div align="center">
-  <img src="assets/images/vis.png" width="1000">
+  <img src="assets/images/comparison_prediction_gt.png" width="1000">
 </div>
 <p align="left">
-  We compare SGDrive~(SFT) with Transfuser, where RL yields safer and more reliable trajectories in challenging turning scenarios. More visualizations are in the supplementary material.
+  Our qualitative results demonstrate strong alignment with ground truth across the scene–agent–goal hierarchy, indicating rich driving-world knowledge and reliable short-horizon representation.
+</p>
+
+<div align="center">
+  <img src="assets/images/Adaptive_occ.png" width="1000">
+</div>
+<p align="left">
+  SGDrive adaptively perceives the driving scene according to the ego-vehicle's motion state and navigation command.  This demonstrates a more structured and effective representation of driving-relevant world knowledge, providing strong evidence that \netName{} successfully elicits the VLM's world-modeling ability.
+</p>
+
+<div align="center">
+  <img src="assets/images/comparison_on_diff_model.png" width="1000">
+</div>
+<p align="left">
+  We compare SGDrive (SFT) with ReCogDrive, both of which leverage structured driving-world knowledge and can extrapolate it reasonably to ensure safe and rational driving behavior. More visualizations are in the supplementary material.
 </p>
 
 
