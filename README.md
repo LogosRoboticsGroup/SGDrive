@@ -1,5 +1,5 @@
 <div align="center">
-<img src="assets/images/logo.png" width="200">
+<!-- <img src="assets/images/logo.png" width="200"> -->
 <h1>SGDrive</h1>
 <h3>SGDrive: Scene-to-Goal Hierarchical World Cognition for Autonomous Driving</h3>
 
