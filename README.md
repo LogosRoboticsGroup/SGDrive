@@ -52,8 +52,8 @@ To address these limitations, we propose SGDrive, a novel framework that explici
 ## Getting Started
 
 - [Download NAVSIM datasets following official instruction](https://github.com/autonomousvision/navsim/blob/main/docs/install.md)
-- [Preparation of ReCogDrive environment](docs/Installation.md)
-- [ReCogDrive Training and Evaluation](docs/Train_Eval.md)
+- [Preparation of SGDrive environment](docs/Installation.md)
+- [SGDrive Training and Evaluation](docs/Train_Eval.md)
 
 ## Checkpoint
 
@@ -63,12 +63,12 @@ To address these limitations, we propose SGDrive, a novel framework that explici
 | Method | Model Size | Training Method | PDMS | Weight Download(coming soon) |
 | :---: | :---: | :---: | :---: |  :---: |
 | SGDrive-VLM | 2B | Q&A SFT | 85.5 | [Model](https://github.com/LogosRoboticsGroup/SGDrive) | |
-| ReCogDrive-Base-IL | 2B  | SFT | 87.4 | [Model](https://github.com/LogosRoboticsGroup/SGDrive) | |
-| ReCogDrive-Base-RL | 2B  | RFT | 91.1 | [Model](https://github.com/LogosRoboticsGroup/SGDrive) | |
+| SGDrive-IL | 2B  | SFT | 87.4 | [Model](https://github.com/LogosRoboticsGroup/SGDrive) | |
+| SGDrive-RL | 2B  | RFT | 91.1 | [Model](https://github.com/LogosRoboticsGroup/SGDrive) | |
 
 | Method | Model Size | Training Stage | EPDMS | Weight Download(coming soon) |
 | :---: | :---: | :---: | :---: |  :---: |
-| ReCogDrive-Base-IL | 2B  | SFT | 86.2 | [Model](https://github.com/LogosRoboticsGroup/SGDrive) | |
+| SGDrive-IL | 2B  | SFT | 86.2 | [Model](https://github.com/LogosRoboticsGroup/SGDrive) | |
 
 
 ## Qualitative Results on NAVSIM Navtest 
