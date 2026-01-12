@@ -97,7 +97,7 @@ To address these limitations, we propose SGDrive, a novel framework that explici
 
 
 ## Contact
-If you have any questions, please contact Jingyu Li via email (jingyu@hust.edu.cn).
+If you have any questions, please contact Jingyu Li via email (jingyuli24@m.fudan.edu.cn).
 
 ## Acknowledgement
 SGDrive is greatly inspired by the following outstanding contributions to the open-source community: [NAVSIM](https://github.com/autonomousvision/navsim), [RecogDrive](https://github.com/xiaomi-research/recogdrive), [GR00T](https://github.com/NVIDIA/Isaac-GR00T).
