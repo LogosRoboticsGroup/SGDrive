@@ -3,8 +3,8 @@
 <h1>SGDrive</h1>
 <h3>SGDrive: Scene-to-Goal Hierarchical World Cognition for Autonomous Driving</h3>
 
-Jingyu Li<sup>1,2\*</sup>, Junjie Wu<sup>2\*</sup>, Dongnan Hu<sup>1,2</sup>, Xiangkai Huang<sup>3</sup>, Bin Sun<sup>3†</sup>, Zhihui Hao<sup>3†</sup>,  
-Xianpeng Lang<sup>3</sup>, Xiatian Zhu<sup>2</sup>, [Zhang Li](https://lzrobots.github.io/)<sup>1✉</sup>  
+Jingyu Li<sup>1,2\*</sup>, Junjie Wu<sup>3\*</sup>, Dongnan Hu<sup>4,2</sup>, Xiangkai Huang<sup>3</sup>, Bin Sun<sup>3†</sup>, Zhihui Hao<sup>3†</sup>,  
+Xianpeng Lang<sup>3</sup>, Xiatian Zhu<sup>5</sup>, [Zhang Li](https://lzrobots.github.io/)<sup>1,2✉</sup>  
 
 <sup>1</sup>Fudan University  <sup>2</sup>Shanghai Innovation Institute
 <sup>3</sup> Li Auto Inc. <sup>4</sup> Tongji University <sup>5</sup> University of Surrey
