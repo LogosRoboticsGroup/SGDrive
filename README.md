@@ -25,7 +25,9 @@ Arxiv 2025
 
 ## Updates
 - [x] Release Paper
-- [ ] Release Full Models and Training/Evaluation Framework
+- [ ] Release results on Navdard_two_stage
+- [ ] Release Full Models
+- [ ] Release Training/Evaluation Framework
 
 ## Table of Contents
 - [News](#news)
@@ -56,9 +58,9 @@ To address these limitations, we propose SGDrive, a novel framework that explici
 - [SGDrive Training and Evaluation](docs/Train_Eval.md)
 
 ## Checkpoint
+We are still working toward achieving better results!
 
-> Results on NAVSIM
-
+> Results on NAVSIM v1 navtest
 
 | Method | Model Size | Training Method | PDMS | Weight Download(coming soon) |
 | :---: | :---: | :---: | :---: |  :---: |
@@ -66,10 +68,22 @@ To address these limitations, we propose SGDrive, a novel framework that explici
 | SGDrive-IL | 2B  | SFT | 87.4 | [Model](https://github.com/LogosRoboticsGroup/SGDrive) | |
 | SGDrive-RL | 2B  | RFT | 91.1 | [Model](https://github.com/LogosRoboticsGroup/SGDrive) | |
 
+> Results on NAVSIM v2 navtest
+
 | Method | Model Size | Training Stage | EPDMS | Weight Download(coming soon) |
 | :---: | :---: | :---: | :---: |  :---: |
 | SGDrive-IL | 2B  | SFT | 86.2 | [Model](https://github.com/LogosRoboticsGroup/SGDrive) | |
 
+
+> Results on NAVSIM v2 navhard_two_stage (* denotes results reproduced with the official code repository or official checkpoint. )
+
+| Method | Model Size | Training Stage | EPDMS |
+| :---: | :---: | :---: | :---: |  :---: |
+| DiffusionDrive* | --  | IL | 24.2 | |
+| GTRS-DP* | --  | IL | 23.8 | |
+| GuideFlow | --  | IL | 27.1 | |
+| Recogdrive-IL* | 2B  | SFT | 26.0 | |
+| SGDrive-IL | 2B  | SFT | 27.1 | |
 
 ## Qualitative Results on NAVSIM Navtest 
 <div align="center">
@@ -79,12 +93,14 @@ To address these limitations, we propose SGDrive, a novel framework that explici
   Our qualitative results demonstrate strong alignment with ground truth across the scene–agent–goal hierarchy, indicating rich driving-world knowledge and reliable short-horizon representation.
 </p>
 
+
 <div align="center">
-  <img src="assets/images/Adaptive_occ.png" width="1000">
+  <img src="assets/images/Adaptive_occ.png" width="500">
 </div>
 <p align="left">
-  SGDrive adaptively perceives the driving scene according to the ego-vehicle's motion state and navigation command.  This demonstrates a more structured and effective representation of driving-relevant world knowledge, providing strong evidence that \netName{} successfully elicits the VLM's world-modeling ability.
+  SGDrive adaptively perceives the driving scene according to the ego-vehicle's motion state and navigation command.  This demonstrates a more structured and effective representation of driving-relevant world knowledge, providing strong evidence that SGDrive successfully elicits the VLM's world-modeling ability.
 </p>
+
 
 <div align="center">
   <img src="assets/images/comparison_on_diff_model.png" width="1000">
@@ -92,7 +108,6 @@ To address these limitations, we propose SGDrive, a novel framework that explici
 <p align="left">
   We compare SGDrive (SFT) with ReCogDrive, both of which leverage structured driving-world knowledge and can extrapolate it reasonably to ensure safe and rational driving behavior. More visualizations are in the supplementary material.
 </p>
-
 
 
 
@@ -107,6 +122,13 @@ SGDrive is greatly inspired by the following outstanding contributions to the op
 If you find SGDrive is useful in your research or applications, please consider giving us a star 🌟 and citing it by the following BibTeX entry.
 
 ```bibtex
+@article{li2026sgdrive,
+  title={SGDrive: Scene-to-Goal Hierarchical World Cognition for Autonomous Driving},
+  author={Li, Jingyu and Wu, Junjie and Hu, Dongnan and Huang, Xiangkai and Sun, Bin and Hao, Zhihui and Lang, Xianpeng and Zhu, Xiatian and Zhang, Li},
+  journal={arXiv preprint arXiv:2601.05640},
+  year={2026}
+}
+
 @misc{li2026sgdrivescenetogoalhierarchicalworld,
       title={SGDrive: Scene-to-Goal Hierarchical World Cognition for Autonomous Driving}, 
       author={Jingyu Li and Junjie Wu and Dongnan Hu and Xiangkai Huang and Bin Sun and Zhihui Hao and Xianpeng Lang and Xiatian Zhu and Li Zhang},
