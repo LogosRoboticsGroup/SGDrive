@@ -20,12 +20,13 @@ Arxiv 2025
 </div>
 
 ## News
+* **` Jan. 15th, 2026`:** We released  results on NAVSIM v2 navhard_two_stage!
 * **` Jan. 09th, 2026`:** We released our paper on [Arxiv](https://arxiv.org/abs/2601.05640). Code/Models are coming soon. Please stay tuned! ☕️
 
 
 ## Updates
 - [x] Release Paper
-- [ ] Release results on Navdard_two_stage
+- [x] Release results on Navdard_two_stage
 - [ ] Release Full Models
 - [ ] Release Training/Evaluation Framework
 
@@ -78,7 +79,7 @@ We are still working toward achieving better results!
 > Results on NAVSIM v2 navhard_two_stage (* denotes results reproduced with the official code repository or official checkpoint. )
 
 | Method | Model Size | Training Stage | EPDMS |
-| :---: | :---: | :---: | :---: |  :---: |
+| :---: | :---: | :---: | :---: |
 | DiffusionDrive* | --  | IL | 24.2 | |
 | GTRS-DP* | --  | IL | 23.8 | |
 | GuideFlow | --  | IL | 27.1 | |
