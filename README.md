@@ -11,7 +11,7 @@ Xianpeng Lang<sup>3</sup>, Xiatian Zhu<sup>5</sup>, [Li Zhang](https://lzrobots.
 
 (\*) Equal contribution. (†) Project leader. (✉) Corresponding author.  
 
-Arxiv 2025
+CVPR 2026
 
 <a href="[https://arxiv.org/abs/2601.05640](https://arxiv.org/abs/2601.05640)"><img src='https://img.shields.io/badge/arXiv-SGDrive-red' alt='Paper PDF'></a>
 </div>
@@ -20,6 +20,7 @@ Arxiv 2025
 </div>
 
 ## News
+* **` Feb. 28, 2026`：** 🎉🎉SGDrive has been accepted to CVPR 2026! We will organize the code and update the repository within the next three weeks！
 * **` Jan. 15th, 2026`:** We released  results on NAVSIM v2 navhard_two_stage!
 * **` Jan. 09th, 2026`:** We released our paper on [Arxiv](https://arxiv.org/abs/2601.05640). Code/Models are coming soon. Please stay tuned! ☕️
 
