@@ -1,0 +1,9 @@
+{
+    "Navsim": {
+      "root": "/path/to/navsim/datasets",
+      "annotation": "/path/to/navsim_traj_world_front_view.jsonl",
+      "data_augment": false,
+      "repeat_time": 2,
+      "length": 85109
+    }
+}

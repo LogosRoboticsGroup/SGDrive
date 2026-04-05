@@ -1,0 +1,28 @@
+# python
+*.pyc
+**/*.pyc
+**/__pycache__/
+.pytest_cache/*
+.pydevproject
+
+# IDE
+.vscode/*
+
+# Pip
+*.egg-info
+
+# files
+*.log
+*.pkl
+*.jpg
+*.pcd
+*.jsonl
+TODO.md
+
+# folders
+exp
+navsim_model_weight
+navsim_data
+jsonl_datasets
+.sii
+.spec-workflow
