@@ -39,7 +39,18 @@ Configure the script `scripts/training/run_sgdrive_train_multi_node_2b.sh` and t
 sh scripts/training/run_sgdrive_train_multi_node_2b.sh
 ```
 
-### Step 3: Configure and Run Evaluation
+### Step 3: Metric Caching
+
+First, you need to cache metrics for the training and test sets, which will be used for evaluation during RL training.
+
+> ⚠️ **Note:** you **must use NumPy version 1.26.4 or above** to avoid potential errors during metric caching.
+
+```bash
+# cache metrics (change TRAIN_TEST_SPLIT to navtrain/navtest/navmini for train/test/debug)
+sh scripts/cache_dataset/run_metric_caching.sh
+```
+
+### Step 4: Configure and Run Evaluation
 
 After training is complete, you can configure the evaluation script and launch evaluation:
 
