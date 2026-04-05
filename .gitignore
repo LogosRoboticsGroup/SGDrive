@@ -17,12 +17,6 @@
 *.jpg
 *.pcd
 *.jsonl
-TODO.md
 
 # folders
 exp
-navsim_model_weight
-navsim_data
-jsonl_datasets
-.sii
-.spec-workflow
