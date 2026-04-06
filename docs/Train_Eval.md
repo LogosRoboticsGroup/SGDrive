@@ -25,21 +25,7 @@ Since DiT training converges relatively slowly, training VLM and DiT jointly can
 
 We also provide the option to skip caching hidden states and directly train VLM + DiT together, though this will be slower. We recommend using SGDrive-2B for training for better efficiency.
 
-### Step 1: Cache hidden states
-```bash
-# cache dataset (change TRAIN_TEST_SPLIT to navtrain/navtest/navmini for train/test/debug)
-sh scripts/cache_dataset/run_caching_sgdrive_hidden_state.sh
-```
-
-### Step 2: Configure and run training
-
-Configure the script `scripts/training/run_sgdrive_train_multi_node_2b.sh` and then start training:
-
-```bash
-sh scripts/training/run_sgdrive_train_multi_node_2b.sh
-```
-
-### Step 3: Metric Caching
+### Step 1: Metric Caching
 
 First, you need to cache metrics for the training and test sets, which will be used for evaluation during RL training.
 
@@ -48,6 +34,20 @@ First, you need to cache metrics for the training and test sets, which will be u
 ```bash
 # cache metrics (change TRAIN_TEST_SPLIT to navtrain/navtest/navmini for train/test/debug)
 sh scripts/cache_dataset/run_metric_caching.sh
+```
+
+### Step 2: Cache hidden states
+```bash
+# cache dataset (change TRAIN_TEST_SPLIT to navtrain/navtest/navmini for train/test/debug)
+sh scripts/cache_dataset/run_caching_sgdrive_hidden_state.sh
+```
+
+### Step 3: Configure and run training
+
+Configure the script `scripts/training/run_sgdrive_train_multi_node_2b.sh` and then start training:
+
+```bash
+sh scripts/training/run_sgdrive_train_multi_node_2b.sh
 ```
 
 ### Step 4: Configure and Run Evaluation
