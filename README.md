@@ -38,7 +38,7 @@ CVPR 2026
 - [Updates](#updates)
 - [Abstract](#abstract)
 - [Getting Started](#getting-started)
-- [Driving Pretraining Datasets](#driving-pretraining-datasets)
+- [Driving Pretraining Datasets](#qa_jsonl)
 - [Qualitative Results on NAVSIM Navtest](#qualitative-results-on-navsim-navtest)
 - [Contact](#contact)
 - [Acknowledgement](#acknowledgement)
@@ -66,6 +66,9 @@ To address these limitations, we propose SGDrive, a novel framework that explici
 - [Download NAVSIM datasets following official instruction](https://github.com/autonomousvision/navsim/blob/main/docs/install.md)
 - [Preparation of SGDrive environment](docs/Installation.md)
 - [SGDrive Training and Evaluation](docs/Train_Eval.md)
+
+## QA_jsonl
+[Driving Pretraining Datasets](https://huggingface.co/SII-Whaleice/SGDrive/tree/main)
 
 ## Checkpoint
 We are still working toward achieving better results!
