@@ -20,6 +20,7 @@ CVPR 2026
 </div>
 
 ## News
+* **` Apr. 06, 2026`：** We release the code and update the repository！
 * **` Feb. 28, 2026`：** 🎉🎉SGDrive has been accepted to CVPR 2026! We will organize the code and update the repository within the next three weeks！
 * **` Jan. 15th, 2026`:** We released  results on NAVSIM v2 navhard_two_stage!
 * **` Jan. 09th, 2026`:** We released our paper on [Arxiv](https://arxiv.org/abs/2601.05640). Code/Models are coming soon. Please stay tuned! ☕️
@@ -29,7 +30,8 @@ CVPR 2026
 - [x] Release Paper  
 - [x] Release Full Models and Training/Evaluation Framework   
 - [x] Release Full Driving QA Datasets
-- [x] Release updated paper 
+- [x] Release updated paper
+- [ ] Release NAVSIM v2 benchmark
 
 ## Table of Contents
 - [News](#news)
