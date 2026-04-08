@@ -74,15 +74,15 @@ We are still working toward achieving better results!
 
 | Method | Model Size | Training Method | PDMS | Weight Download(coming soon) |
 | :---: | :---: | :---: | :---: |  :---: |
-| SGDrive-VLM | 2B | Q&A SFT | 85.5 | [Model](https://github.com/LogosRoboticsGroup/SGDrive) | |
-| SGDrive-IL | 2B  | SFT | 87.4 | [Model](https://github.com/LogosRoboticsGroup/SGDrive) | |
-| SGDrive-RL | 2B  | RFT | 91.1 | [Model](https://github.com/LogosRoboticsGroup/SGDrive) | |
+| SGDrive-VLM | 2B | Q&A SFT | 85.5 | [Model](https://huggingface.co/SII-Whaleice/SGDrive/tree/main) | |
+| SGDrive-IL | 2B  | SFT | 87.4 | [Model](https://huggingface.co/SII-Whaleice/SGDrive/tree/main) | |
+| SGDrive-RL | 2B  | RFT | 91.1 | [Model](https://huggingface.co/SII-Whaleice/SGDrive/tree/main) | |
 
 > Results on NAVSIM v2 navtest
 
 | Method | Model Size | Training Stage | EPDMS | Weight Download(coming soon) |
 | :---: | :---: | :---: | :---: |  :---: |
-| SGDrive-IL | 2B  | SFT | 86.2 | [Model](https://github.com/LogosRoboticsGroup/SGDrive) | |
+| SGDrive-IL | 2B  | SFT | 86.2 | [Model](https://huggingface.co/SII-Whaleice/SGDrive/tree/main) | |
 
 
 > Results on NAVSIM v2 navhard_two_stage (* denotes results reproduced with the official code repository or official checkpoint. )
