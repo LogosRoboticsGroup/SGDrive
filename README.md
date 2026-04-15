@@ -20,6 +20,7 @@ CVPR 2026 Poster
 </div>
 
 ## News
+* **` Apr. 15, 2026`：** We will check the error and update code after March 15th！
 * **` Apr. 06, 2026`：** We release the code and update the repository！
 * **` Feb. 28, 2026`：** 🎉🎉SGDrive has been accepted to CVPR 2026! We will organize the code and update the repository within the next three weeks！
 * **` Jan. 15th, 2026`:** We released  results on NAVSIM v2 navhard_two_stage!
