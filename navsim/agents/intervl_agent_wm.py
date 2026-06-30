@@ -52,7 +52,15 @@ from internvl_chat.internvl.train.constants import (BOX_END_TOKEN, BOX_START_TOK
                                       BACK_LEFT_VIEW_TOKEN, BACK_RIGHT_VIEW_TOKEN, BACK_VIEW_TOKEN, WORLD_TOKEN, DREAM_TOKEN)
 
 system_message = """
-You are a perception model for autonomous driving. Your task is to perceive the scene based on front-view images.
+You are a vehicle trajectory prediction model for autonomous driving. Your task is to predict the ego vehicle's 4-second trajectory based on the following inputs: multi-view images from 8 cameras, ego vehicle states (position), and discrete navigation commands. The input provides a 2-second history, and your output should ensure a safe trajectory for the next 4 seconds. Your predictions must adhere to the following metrics:
+1. **No at-fault Collisions (NC)**: Avoid collisions with other objects/vehicles.
+2. **Drivable Area Compliance (DAC)**: Stay within the drivable area.
+3. **Time to Collision (TTC)**: Maintain a safe distance from other vehicles.
+4. **Ego Progress (EP)**: Ensure the ego vehicle moves forward without being stuck.
+5. **Comfort (C)**: Avoid sharp turns and sudden decelerations.
+6. **Driving Direction Compliance (DDC)**: Align with the intended driving direction.
+For evaluation, use the **PDM Score**, which combines these metrics: **PDM Score** = NC * DAC * (5*TTC + 5*EP + 2*C + 0*DDC) / 12.
+Your predictions will be evaluated through a non-reactive 4-second simulation with an LQR controller and background actors following their recorded trajectories. The better your predictions, the higher your score.
 """
 
 IMAGENET_MEAN = (0.485, 0.456, 0.406)
@@ -142,6 +150,24 @@ def format_number(n, decimal_places=2):
         format_string = f"{{n:+.{decimal_places}f}}"
         return format_string.format(n=n)
 
+
+def format_history_context(history_trajectory):
+    return " ".join(
+        [
+            f"-t-{3-i}: ({t['x']}, {t['y']}, {t['heading']})"
+            for i, t in enumerate(history_trajectory)
+        ]
+    )
+
+
+def get_navigation_command(high_command_one_hot):
+    navigation_commands = ["turn left", "go straight", "turn right"]
+    for i, value in enumerate(high_command_one_hot):
+        if value == 1:
+            return navigation_commands[i] if i < len(navigation_commands) else "unknown"
+    return "unknown"
+
+
 class InterVLPredictor(nn.Module):
     def __init__(self, model_path, is_train=False):
         super().__init__()
@@ -150,6 +176,7 @@ class InterVLPredictor(nn.Module):
     def load_model(self, model_path, is_train):
         config = InternVLChatConfig_WM.from_pretrained(model_path)
         config.output_hidden_states = True
+        config.system_message = system_message
 
         config.llm_config._attn_implementation = "sdpa"
         config.llm_config._attn_implementation_internal = "sdpa"
@@ -175,6 +202,7 @@ class InterVLPredictor(nn.Module):
 
         if not is_train:
             model.eval()
+        model.system_message = system_message
 
         tokenizer = AutoTokenizer.from_pretrained(
             model_path,
@@ -320,13 +348,7 @@ class InternVLAgent_WM(AbstractAgent):
             )
 
         high_command_one_hot = ego_statuses[-1].driving_command
-        navigation_commands = ["turn left", "go straight", "turn right"]
-        command_str = [
-            navigation_commands[i]
-            for i in range(len(high_command_one_hot))
-            if high_command_one_hot[i] == 1
-        ]
-        command_str = command_str[0] if command_str else "unknown"
+        command_str = get_navigation_command(high_command_one_hot)
 
         # image_paths = []
         image_inputs = []
@@ -356,7 +378,8 @@ class InternVLAgent_WM(AbstractAgent):
         image_prompt_str = "".join(image_prompt_lines)
 
         # common_prompt = f"""As an autonomous driving system, preception the current scene based on:\n{image_prompt}"""
-        common_prompt = f"""As an autonomous driving system, predict the vehicle's trajectory based on:\n{image_prompt_desc}2. Historical motion context (last 4 timesteps):{" ".join([f'   - t-{3-i}: ({t["x"]}, {t["y"]}, {t["heading"]})' for i, t in enumerate(history_trajectory)])}\n3. Active navigation command: [{command_str.upper()}]"""
+        history_context = format_history_context(history_trajectory)
+        common_prompt = f"""As an autonomous driving system, predict the vehicle's trajectory based on:\n{image_prompt_desc}2. Historical motion context (last 4 timesteps):{history_context}\n3. Active navigation command: [{command_str.upper()}]"""
         output_requirements = (
             "\nOutput requirements:\n- Predict 8 future trajectory points\n"
             "- Each point format: (x:float, y:float, heading:float)\n"
@@ -430,13 +453,7 @@ class InternVLAgent_WM(AbstractAgent):
             )
 
         high_command_one_hot = ego_statuses[-1].driving_command
-        navigation_commands = ["turn left", "go straight", "turn right"]
-        command_str = [
-            navigation_commands[i]
-            for i in range(len(high_command_one_hot))
-            if high_command_one_hot[i] == 1
-        ]
-        command_str = command_str[0] if command_str else "unknown"
+        command_str = get_navigation_command(high_command_one_hot)
 
         image_paths = []
         # image_inputs = []
@@ -467,7 +484,8 @@ class InternVLAgent_WM(AbstractAgent):
         image_prompt_str = "".join(image_prompt_lines)
 
         # common_prompt = f"""As an autonomous driving system, preception the current scene based on:\n{image_prompt}"""
-        common_prompt = f"""As an autonomous driving system, predict the vehicle's trajectory based on:\n{image_prompt_desc}2. Historical motion context (last 4 timesteps):{" ".join([f'   - t-{3-i}: ({t["x"]}, {t["y"]}, {t["heading"]})' for i, t in enumerate(history_trajectory)])}\n3. Active navigation command: [{command_str.upper()}]"""
+        history_context = format_history_context(history_trajectory)
+        common_prompt = f"""As an autonomous driving system, predict the vehicle's trajectory based on:\n{image_prompt_desc}2. Historical motion context (last 4 timesteps):{history_context}\n3. Active navigation command: [{command_str.upper()}]"""
         output_requirements = (
             "\nOutput requirements:\n- Predict 8 future trajectory points\n"
             "- Each point format: (x:float, y:float, heading:float)\n"
@@ -557,13 +575,7 @@ class InternVLAgent_WM(AbstractAgent):
             )
 
         high_command_one_hot = ego_statuses[-1].driving_command
-        navigation_commands = ["turn left", "go straight", "turn right"]
-        command_str = [
-            navigation_commands[i]
-            for i in range(len(high_command_one_hot))
-            if high_command_one_hot[i] == 1
-        ]
-        command_str = command_str[0] if command_str else "unknown"
+        command_str = get_navigation_command(high_command_one_hot)
 
         image_paths = []
         # image_inputs = []
@@ -594,7 +606,8 @@ class InternVLAgent_WM(AbstractAgent):
         image_prompt_str = "".join(image_prompt_lines)
 
         # common_prompt = f"""As an autonomous driving system, preception the current scene based on:\n{image_prompt}"""
-        common_prompt = f"""As an autonomous driving system, predict the vehicle's trajectory based on:\n{image_prompt_desc}2. Historical motion context (last 4 timesteps):{" ".join([f'   - t-{3-i}: ({t["x"]}, {t["y"]}, {t["heading"]})' for i, t in enumerate(history_trajectory)])}\n3. Active navigation command: [{command_str.upper()}]"""
+        history_context = format_history_context(history_trajectory)
+        common_prompt = f"""As an autonomous driving system, predict the vehicle's trajectory based on:\n{image_prompt_desc}2. Historical motion context (last 4 timesteps):{history_context}\n3. Active navigation command: [{command_str.upper()}]"""
         output_requirements = (
             "\nOutput requirements:\n- Predict 8 future trajectory points\n"
             "- Each point format: (x:float, y:float, heading:float)\n"

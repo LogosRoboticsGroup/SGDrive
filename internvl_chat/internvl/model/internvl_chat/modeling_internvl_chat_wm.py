@@ -141,10 +141,21 @@ class InternVLChatModel_WM(PreTrainedModel):
         self.img_context_token_id = None
 
         # define world token and world query
-        self.NUM_WORLD_TOKEN = config.agent_token_number + config.gp_token_number + config.occ_token_number
-        self.agent_token_number = config.agent_token_number
-        self.gp_token_number = config.gp_token_number
-        self.occ_token_number = config.occ_token_number
+        def get_token_number(singular_name, plural_name, default=0):
+            value = getattr(config, singular_name, None)
+            if value is None:
+                value = getattr(config, plural_name, default)
+            value = int(value)
+            setattr(config, singular_name, value)
+            setattr(config, plural_name, value)
+            return value
+
+        self.agent_token_number = get_token_number("agent_token_number", "agent_token_numbers")
+        self.gp_token_number = get_token_number("gp_token_number", "gp_token_numbers")
+        self.occ_token_number = get_token_number("occ_token_number", "occ_token_numbers")
+        self.NUM_WORLD_TOKEN = self.agent_token_number + self.gp_token_number + self.occ_token_number
+        config.world_token_number = self.NUM_WORLD_TOKEN
+        config.world_token_numbers = self.NUM_WORLD_TOKEN
         self.dream_world = os.getenv("dream_world", True) #config.dream_world
         self.world_token_id = None
         self.world_queries = nn.Parameter(
