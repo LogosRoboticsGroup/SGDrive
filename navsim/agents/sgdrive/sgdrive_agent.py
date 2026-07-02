@@ -18,7 +18,7 @@ from nuplan.planning.simulation.trajectory.trajectory_sampling import Trajectory
 
 from .utils.internvl_preprocess import load_image,load_image_withreisze
 from .utils.lr_scheduler import WarmupCosLR
-from .utils.utils import format_number, build_from_configs
+from .utils.utils import build_from_configs, format_history_context, get_navigation_command
 from .sgdrive_features import SGDriveFeatureBuilder, TrajectoryTargetBuilder
 from .sgdrive_backbone import SGDriveBackbone
 from .sgdrive_diffusion_planner import (
@@ -171,26 +171,12 @@ class SGDriveAgent(AbstractAgent):
             num_patches_list = [p.shape[0] for p in pixel_values_list]
             pixel_values_cat = torch.cat(pixel_values_list, dim=0).cuda()
 
-            navigation_commands = ["turn left", "go straight", "turn right"]
-            command_indices = torch.argmax(high_command_one_hot, dim=-1)
-            command_str_list = [
-                navigation_commands[idx.item()] for idx in command_indices
-            ]
-
             questions = []
             batch_size = high_command_one_hot.shape[0]
             for i in range(batch_size):
                 history_trajectory_sample = history_trajectory[i]
-                command_str_sample = command_str_list[i]
-
-                history_str = " ".join(
-                    [
-                        f"   - t-{3-j}: ({format_number(history_trajectory_sample[j, 0].item())}, "
-                        f"{format_number(history_trajectory_sample[j, 1].item())}, "
-                        f"{format_number(history_trajectory_sample[j, 2].item())})"
-                        for j in range(history_trajectory_sample.shape[0])
-                    ]
-                )
+                command_str_sample = get_navigation_command(high_command_one_hot[i])
+                history_str = format_history_context(history_trajectory_sample)
 
                 prompt = (
                     "<image>\nAs an autonomous driving system, predict the vehicle's trajectory based on:\n"

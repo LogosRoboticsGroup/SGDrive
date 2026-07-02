@@ -14,10 +14,7 @@ from navsim.common.dataclasses import Scene, Trajectory
 from nuplan.planning.simulation.trajectory.trajectory_sampling import TrajectorySampling
 from .sgdrive_backbone import SGDriveBackbone
 from .utils.internvl_preprocess import load_image
-
-
-def format_number(n, decimal_places=2):
-    return f"{n:+.{decimal_places}f}" if abs(round(n, decimal_places)) > 1e-2 else "0.0"
+from .utils.utils import format_history_context, get_navigation_command
 
 
 class SGDriveFeatureBuilder(AbstractFeatureBuilder):
@@ -110,21 +107,8 @@ class SGDriveFeatureBuilder(AbstractFeatureBuilder):
                 num_patches_list = [pv.shape[0] for pv in pixel_values_squeezed]
                 pixel_values_cat = torch.cat(list(pixel_values_squeezed), dim=0)
 
-                navigation_commands = ["turn left", "go straight", "turn right"]
-                command_str = next(
-                    (
-                        navigation_commands[i]
-                        for i, v in enumerate(high_command_one_hot)
-                        if v == 1
-                    ),
-                    "unknown",
-                )
-                history_str = " ".join(
-                    [
-                        f"   - t-{3-i}: ({format_number(history_trajectory[i, 0].item())}, {format_number(history_trajectory[i, 1].item())}, {format_number(history_trajectory[i, 2].item())})"
-                        for i in range(4)
-                    ]
-                )
+                command_str = get_navigation_command(high_command_one_hot)
+                history_str = format_history_context(history_trajectory)
 
                 prompt = f"<image>\nAs an autonomous driving system, predict the vehicle's trajectory based on:\n1. Visual perception from front camera view\n2. Historical motion context (last 4 timesteps):{history_str}\n3. Active navigation command: [{command_str.upper()}]"
                 output_requirements = "\nOutput requirements:\n- Predict 8 future trajectory points\n- Each point format: (x:float, y:float, heading:float)\n- Use [PT, ...] to encapsulate the trajectory\n- Maintain numerical precision to 2 decimal places"
@@ -159,22 +143,8 @@ class SGDriveFeatureBuilder(AbstractFeatureBuilder):
                 pixel_values = torch.cat(pixel_values_list, dim=0)
                 num_patches_list = [pv.size(0) for pv in pixel_values_list]
 
-                navigation_commands = ["turn left", "go straight", "turn right"]
-                command_str = "unknown"
-                for i, v in enumerate(high_command_one_hot):
-                    try:
-                        if v == 1:
-                            command_str = navigation_commands[i]
-                            break
-                    except IndexError:
-                        print(f"[IndexError] navigation_commands out of bounds: i={i}, high_command_one_hot={high_command_one_hot.tolist()}")
-                        break
-                history_str = " ".join(
-                    [
-                        f"   - t-{3-i}: ({format_number(history_trajectory[i, 0].item())}, {format_number(history_trajectory[i, 1].item())}, {format_number(history_trajectory[i, 2].item())})"
-                        for i in range(4)
-                    ]
-                )
+                command_str = get_navigation_command(high_command_one_hot)
+                history_str = format_history_context(history_trajectory)
 
                 prompt = f"<image><image><image><image>\nAs an autonomous driving system, predict the vehicle's trajectory based on:\n1. Visual perception from front camera view (last 4 timesteps)\n2. Historical motion context (last 4 timesteps):{history_str}\n3. Active navigation command: [{command_str.upper()}]"
                 output_requirements = "\nOutput requirements:\n- Predict 8 future trajectory points\n- Each point format: (x:float, y:float, heading:float)\n- Use [PT, ...] to encapsulate the trajectory\n- Maintain numerical precision to 2 decimal places"

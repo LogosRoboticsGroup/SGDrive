@@ -553,7 +553,9 @@ class InternVLChatModel_WM(PreTrainedModel):
         B, N, C = input_embeds.shape
         attention_masks = []
         for i in range(B):
-            attention_mask = torch.tril(torch.ones(N, N, device=input_embeds.device))
+            attention_mask = torch.tril(
+                torch.ones(N, N, device=input_embeds.device, dtype=torch.bool)
+            )
             batch_selected = torch.argwhere(input_ids == self.world_token_id)
         
             if len(batch_selected) >= (self.occ_token_number + self.agent_token_number + self.gp_token_number ):
@@ -587,8 +589,11 @@ class InternVLChatModel_WM(PreTrainedModel):
                 
             attention_masks.append(attention_mask.unsqueeze(0))
 
-        attention_mask = torch.cat(attention_masks, dim=0)
-        return attention_mask.unsqueeze(1)
+        attention_mask = torch.cat(attention_masks, dim=0).unsqueeze(1)
+        additive_mask = torch.zeros_like(attention_mask, dtype=input_embeds.dtype)
+        return additive_mask.masked_fill(
+            ~attention_mask, torch.finfo(input_embeds.dtype).min
+        )
     
     def cache_forward(
         self,
@@ -707,7 +712,7 @@ class InternVLChatModel_WM(PreTrainedModel):
 
         input_embeds = input_embeds.reshape(B, N, C)
 
-        attention_mask = self.cache_generate_attention_mask(input_embeds, input_ids)
+        # attention_mask = self.cache_generate_attention_mask(input_embeds, input_ids) #important
 
         outputs = self.language_model(
             inputs_embeds=input_embeds,
@@ -736,7 +741,9 @@ class InternVLChatModel_WM(PreTrainedModel):
         B, N, C = input_embeds.shape
         attention_masks = []
         for i in range(B):
-            attention_mask = torch.tril(torch.ones(N, N, device=input_embeds.device))
+            attention_mask = torch.tril(
+                torch.ones(N, N, device=input_embeds.device, dtype=torch.bool)
+            )
             batch_selected = torch.argwhere(input_ids == self.world_token_id)
         
             if len(batch_selected) >= (self.occ_token_number + self.agent_token_number + self.gp_token_number ):
@@ -770,8 +777,11 @@ class InternVLChatModel_WM(PreTrainedModel):
                 
             attention_masks.append(attention_mask.unsqueeze(0))
 
-        attention_mask = torch.cat(attention_masks, dim=0)
-        return attention_mask.unsqueeze(1)
+        attention_mask = torch.cat(attention_masks, dim=0).unsqueeze(1)
+        additive_mask = torch.zeros_like(attention_mask, dtype=input_embeds.dtype)
+        return additive_mask.masked_fill(
+            ~attention_mask, torch.finfo(input_embeds.dtype).min
+        )
 
 
     def pixel_shuffle(self, x, scale_factor=0.5):

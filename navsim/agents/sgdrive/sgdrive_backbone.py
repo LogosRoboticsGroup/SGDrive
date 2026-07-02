@@ -1,4 +1,5 @@
 import os
+import re
 from typing import List, Optional, Tuple, Union
 import torch
 from torch import nn
@@ -93,6 +94,7 @@ class SGDriveBackbone(nn.Module):
         elif self.model_type == "internvl_wm":
             config = InternVLChatConfig_WM.from_pretrained(checkpoint_path)
             config.output_hidden_states = True
+            config.system_message = system_message
             config.llm_config._attn_implementation = "sdpa"
             config.llm_config._attn_implementation_internal = "sdpa"
 
@@ -113,7 +115,7 @@ class SGDriveBackbone(nn.Module):
                 config=config,
                 torch_dtype=torch.bfloat16,   
                 device_map=self.device
-            )
+            ).eval()
 
             self.tokenizer = AutoTokenizer.from_pretrained(
                 checkpoint_path,
@@ -144,6 +146,81 @@ class SGDriveBackbone(nn.Module):
         self.img_context_token_id = self.tokenizer.convert_tokens_to_ids(IMG_CONTEXT_TOKEN)
         self.model.img_context_token_id = self.img_context_token_id
         print("InternVL model configured.")
+
+    def _maybe_print_cache_input_debug(
+        self,
+        question: str,
+        query: str,
+        input_ids: torch.Tensor,
+        attention_mask: torch.Tensor,
+        num_patches_list: List[int],
+    ) -> None:
+        if getattr(self, "_printed_cache_input_debug", False):
+            return
+
+        rank = int(os.environ.get("RANK", os.environ.get("LOCAL_RANK", "0")))
+        enabled = os.environ.get("SGDRIVE_PRINT_CACHE_INPUT", "1").lower()
+        if rank != 0 or enabled in {"0", "false", "no"}:
+            return
+
+        self._printed_cache_input_debug = True
+
+        def compact_repeated_tokens(text: str) -> str:
+            compact_text = text
+            for token in (IMG_CONTEXT_TOKEN, WORLD_TOKEN, DREAM_TOKEN):
+                pattern = f"(?:{re.escape(token)})+"
+
+                def replace(match, repeated_token=token):
+                    count = len(match.group(0)) // len(repeated_token)
+                    return f"{repeated_token} x{count}"
+
+                compact_text = re.sub(pattern, replace, compact_text)
+            return compact_text
+
+        non_padding_mask = attention_mask[0].bool()
+        tokenized_input_ids = input_ids[0]
+        decoded_ids = tokenized_input_ids[non_padding_mask].detach().cpu().tolist()
+        decoded_non_padding = self.tokenizer.decode(
+            decoded_ids,
+            skip_special_tokens=False,
+        )
+
+        world_token_id = getattr(self, "world_token_id", None)
+        dream_token_id = getattr(self, "dream_token_id", None)
+        tokenized_world_count = (
+            int((tokenized_input_ids == world_token_id).sum().item())
+            if world_token_id is not None
+            else 0
+        )
+        tokenized_dream_count = (
+            int((tokenized_input_ids == dream_token_id).sum().item())
+            if dream_token_id is not None
+            else 0
+        )
+
+        print("\n========== SGDrive cache VLM input debug ==========")
+        print(f"num_patches_list: {num_patches_list}")
+        print(f"text_length_chars: {len(query)}")
+        print(f"tokenized_total_length: {input_ids.shape[-1]}")
+        print(f"tokenized_non_padding_length: {int(attention_mask[0].sum().item())}")
+        print(f"question_<image>_count: {question.count('<image>')}")
+        print(f"query_<img>_count: {query.count(IMG_START_TOKEN)}")
+        print(f"query_<IMG_CONTEXT>_count: {query.count(IMG_CONTEXT_TOKEN)}")
+        print(f"query_<world>_start_count: {query.count(WORLD_START_TOKEN)}")
+        print(f"query_<WORLD TOKEN>_count: {query.count(WORLD_TOKEN)}")
+        print(f"query_</world>_end_count: {query.count(WORLD_END_TOKEN)}")
+        print(f"query_<dream>_start_count: {query.count(DREAM_START_TOKEN)}")
+        print(f"query_<DREAM TOKEN>_count: {query.count(DREAM_TOKEN)}")
+        print(f"query_</dream>_end_count: {query.count(DREAM_END_TOKEN)}")
+        print(f"tokenized_world_token_count: {tokenized_world_count}")
+        print(f"tokenized_dream_token_count: {tokenized_dream_count}")
+        print("----- raw question -----")
+        print(question)
+        print("----- compact final query before tokenizer -----")
+        print(compact_repeated_tokens(query))
+        print("----- compact decoded non-padding input -----")
+        print(compact_repeated_tokens(decoded_non_padding))
+        print("========== end SGDrive cache VLM input debug ==========\n")
 
     def forward(
         self,
@@ -240,12 +317,21 @@ class SGDriveBackbone(nn.Module):
                 query = query.replace("<dream>", dream_tokens, 1)
 
             self.tokenizer.padding_side = "left"
-            model_inputs = self.tokenizer(query, return_tensors="pt", padding="max_length", max_length=5100) #dream+world
+            model_inputs = self.tokenizer(query, padding="max_length", max_length=5000, return_tensors="pt")
+            # model_inputs = self.tokenizer(query, return_tensors="pt", padding="max_length", max_length=5100) #dream+world
             # model_inputs = self.tokenizer(query, return_tensors="pt", padding="max_length", max_length=4300)
             # model_inputs = self.tokenizer(query, return_tensors="pt", padding="max_length", max_length=(3624 + self.world_token_number))
             device = torch.device("cuda")
             input_ids = model_inputs["input_ids"].to(device)
             attention_mask = model_inputs["attention_mask"].to(device)
+
+            # self._maybe_print_cache_input_debug(
+            #     question=questions[0],
+            #     query=query,
+            #     input_ids=input_ids,
+            #     attention_mask=attention_mask,
+            #     num_patches_list=num_patches_list,
+            # )
 
             position_ids = attention_mask.long().cumsum(-1) - 1
             position_ids.masked_fill_(attention_mask == 0, 1)
